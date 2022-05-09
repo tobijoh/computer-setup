@@ -72,3 +72,5 @@ function Read-HostAndSaveToEnv($Description, $EnvironmentKey) {
     }
     Write-Host ""
 }
+
+Run
