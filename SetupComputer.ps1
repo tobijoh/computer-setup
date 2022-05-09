@@ -48,21 +48,4 @@ function AddBoxstarterDoneRestorePoint {
     }
 }
 
-# HELPER FUNCTIONS
-function Read-HostAndSaveToEnv($Description, $EnvironmentKey) {
-    $CurrentValue = [Environment]::GetEnvironmentVariable($EnvironmentKey, "User")
-    Write-Host $Description -ForegroundColor green
-    if ($CurrentValue) {
-        Write-Host "Simply press ENTER to preserve current value (" -NoNewline
-        Write-Host $CurrentValue  -NoNewline -ForegroundColor blue
-        Write-Host ")"
-    }
-    Write-Host "> " -NoNewline
-    $NewValue = Read-Host
-    if ($NewValue -ne "") {
-        [Environment]::SetEnvironmentVariable($EnvironmentKey, $NewValue, "User")
-    }
-    Write-Host ""
-}
-
 Run
