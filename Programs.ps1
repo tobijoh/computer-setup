@@ -33,6 +33,7 @@ function ConfigureDevelopmentTools {
     code --install-extension msjsdiag.debugger-for-chrome
     code --install-extension PKief.material-icon-theme
     code --install-extension runningcoder.react-snippets
+    code --install-extension shd101wyy.markdown-preview-enhanced
     Write-Host "Installed VS Code Extensions" -Foreground green
 
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
