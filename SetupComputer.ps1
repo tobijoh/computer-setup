@@ -11,6 +11,7 @@ function Run {
     RunWindowsUpdate
     AddBoxstarterDoneRestorePoint
     SetGitUser
+    InstallFonts
 
     Invoke-Reboot
 }
@@ -43,7 +44,7 @@ function CleanUpDesktop {
 }
 
 function AddBoxstarterDoneRestorePoint {
-    if  (!((Get-ComputerRestorePoint).Description -Like "Boxstarter done")) {
+    if (!((Get-ComputerRestorePoint).Description -Like "Boxstarter done")) {
         Checkpoint-Computer -Description "Boxstarter done"
     }
 }

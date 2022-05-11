@@ -123,8 +123,43 @@ function SetGitUser {
     $GitUserName = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_USER_NAME", "User")
     $GitEmail = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_EMAIL", "User")
 
-    if($GitUserName -and $GitEmail) {
+    if ($GitUserName -and $GitEmail) {
         git config --global user.name "$GitUserName"
         git config --global user.email "$GitEmail"
     }
+}
+
+function InstallFonts {
+    Write-Host "Installing fonts" -ForegroundColor Magenta
+
+    $WindowsFontsDirectory = "C:\Windows\fonts"
+    $FontsTempDirectory = ".\fonts"
+    $FontsObject = (New-Object -ComObject Shell.Application).Namespace(0x14)
+
+    $FontUrls = @('https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf',
+        'https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf',
+        'https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf',
+        'https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf')
+
+    New-Item -ItemType Directory -Force -Path $FontsTempDirectory > $null
+
+    Push-Location $FontsTempDirectory
+
+    foreach ($FontUrl in $FontUrls) {
+        $FontName = $FontUrl.Split('/')[-1]
+        Invoke-WebRequest -Uri $FontUrl -OutFile ".\$FontName"
+    }
+
+    Get-ChildItem -Path $Source -Include '*.ttf', '*.ttc', '*.otf' -Recurse | ForEach-Object {
+        $FontName = $_.Name
+
+        if (-Not(Test-Path -Path "$WindowsFontsDirectory\$FontName" )) {
+            Write-Host "Installing font: $FontName"
+            $FontsObject.CopyHere($_.FullName)
+        }
+    }
+
+    Pop-Location
+
+    Remove-Item -Path $FontsTempDirectory -Force -Recurse
 }
