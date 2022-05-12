@@ -17,6 +17,7 @@ function InstallPrograms {
     choco install dotnetcore-sdk -y
     choco install spotify -y
     choco install ditto --pre -y
+    choco install postman -y
     scoop install yarn
     scoop install sudo
     scoop install pwsh
@@ -77,7 +78,8 @@ function ConfigureDevelopmentTools {
 function Add-ToPowerShellProfile($Find, $Content) {
     if (!( Test-Path $Profile )) { 
         New-Item $Profile -Type File -Force
-    } else  {
+    }
+    else {
         $CurrentProfileContent = Get-Content $Profile
     }
 
