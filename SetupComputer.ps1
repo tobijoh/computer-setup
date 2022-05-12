@@ -11,7 +11,6 @@ function Run {
     RunWindowsUpdate
     AddBoxstarterDoneRestorePoint
     SetGitUser
-    InstallFonts
 
     Invoke-Reboot
 }
@@ -34,6 +33,7 @@ function ConfigureEnvironment {
     SetupDirectoryOptions
     CleanUpPreInstalledApps
     InstallWindowsSubsystemForLinux
+    InstallFonts
 }
 
 function CleanUpDesktop {
