@@ -25,18 +25,18 @@ function InstallPrograms {
 }
 
 function ConfigureDevelopmentTools {
-    Write-Host "Installing VS Code extensions"
-    code --install-extension dbaeumer.vscode-eslint
-    code --install-extension esbenp.prettier-vscode
-    code --install-extension formulahendry.auto-rename-tag
-    code --install-extension kavod-io.vscode-jest-test-adapter
-    code --install-extension ms-vsliveshare.vsliveshare
-    code --install-extension msjsdiag.debugger-for-chrome
-    code --install-extension PKief.material-icon-theme
-    code --install-extension runningcoder.react-snippets
-    code --install-extension shd101wyy.markdown-preview-enhanced
-    Write-Host "Installed VS Code Extensions" -Foreground green
+    ConfigurePowershell
+    ConfigureGit
+    ConfigureVsCode
 
+    $GitCloneTarget = "C:\dev"
+
+    if (!(Test-Path $GitCloneTarget)) {
+        mkdir $GitCloneTarget
+    }
+}
+
+function ConfigurePowershell {
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
     Install-Module -Name z -RequiredVersion 1.1.10 -AllowClobber
     Install-Module psreadline -Force
@@ -48,7 +48,9 @@ function ConfigureDevelopmentTools {
     Import-Module posh-git
     Set-Alias g git
     ")
+}
 
+function ConfigureGit {
     git config --global push.default current
     git config --global core.editor "code --wait"
     git config --global merge.tool vscode
@@ -68,12 +70,67 @@ function ConfigureDevelopmentTools {
     git config --global alias.mr "push -u -o merge_request.create -o merge_request.remove_source_branch"
     git config --global alias.dotnetformat = !git rebase --interactive --exec \"dotnet format ./src && git commit -a --allow-empty --fixup=HEAD\" --strategy-option=theirs origin/$(git main)
     git config --global alias.main = !git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4
+}
 
-    $GitCloneTarget = "C:\dev"
+function ConfigureVsCode {
+    # Install extensions
 
-    if (!(Test-Path $GitCloneTarget)) {
-        mkdir $GitCloneTarget
+    Write-Host "Installing VS Code extensions"
+    code --install-extension dbaeumer.vscode-eslint
+    code --install-extension esbenp.prettier-vscode
+    code --install-extension formulahendry.auto-rename-tag
+    code --install-extension kavod-io.vscode-jest-test-adapter
+    code --install-extension ms-vsliveshare.vsliveshare
+    code --install-extension msjsdiag.debugger-for-chrome
+    code --install-extension PKief.material-icon-theme
+    code --install-extension runningcoder.react-snippets
+    code --install-extension shd101wyy.markdown-preview-enhanced
+    Write-Host "Installed VS Code Extensions" -Foreground Green
+
+
+    # Configure desired settings
+
+    Write-Host "Configuring VS Code settings"
+
+    $SettingsPath = "$env:APPDATA\Code\User\settings.json"
+    $JsonSettings = Get-Content -Raw -Path $SettingsPath -ErrorAction silentlycontinue | ConvertFrom-Json
+
+    $DesiredSettings = @{
+        "liveshare.presence"                         = $true;
+        "editor.fontFamily"                          = "'Fira Code', Consolas, 'Courier New', monospace";
+        "editor.fontLigatures"                       = $true;
+        "[html]"                                     = @{
+            "editor.defaultFormatter" = "esbenp.prettier-vscode"
+        };
+        "security.workspace.trust.untrustedFiles"    = "open";
+        "editor.formatOnSave"                        = $true;
+        "[javascriptreact]"                          = @{
+            "editor.defaultFormatter" = "esbenp.prettier-vscode"
+        };
+        "[javascript]"                               = @{
+            "editor.defaultFormatter" = "esbenp.prettier-vscode"
+        };
+        "terminal.integrated.defaultProfile.windows" = "PowerShell"
     }
+
+    if ($JsonSettings) {
+        foreach ($Setting in $DesiredSettings.GetEnumerator()) {
+            $SettingKey = $Setting.Name
+            $SettingValue = $Setting.Value
+
+            Write-Host "Setting $SettingKey to $($SettingValue | Out-String)"
+
+            if ($JsonSettings.$SettingKey) {
+                $JsonSettings.PSObject.Properties.Remove($SettingKey)
+            }
+            
+            $JsonSettings | Add-Member -Name $SettingKey -Value $SettingValue -MemberType NoteProperty
+        }
+    }
+
+    $JsonSettings | ConvertTo-Json | Out-File $SettingsPath -Encoding utf8
+
+    Write-Host "VS Code settings configured" -Foreground Green
 }
 
 # HELPER FUNCTIONS
