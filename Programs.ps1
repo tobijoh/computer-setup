@@ -131,6 +131,15 @@ function ConfigureVsCode {
     $JsonSettings | ConvertTo-Json | Out-File $SettingsPath -Encoding utf8
 
     Write-Host "VS Code settings configured" -Foreground Green
+
+    Write-Host "Configuring Windows Terminal settings"
+    
+    $SourceSettingsPath = ".\windows-terminal.settings.json"
+    $WindowsTerminalSettingsPath = "$envLocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    
+    Copy-Item -Path $SourceSettingsPath -Destination $WindowsTerminalSettingsPath
+    
+    Write-Host "Windows Terminal settings configured" -Foreground Green
 }
 
 # HELPER FUNCTIONS
