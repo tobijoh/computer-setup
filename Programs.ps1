@@ -86,59 +86,21 @@ function ConfigureVsCode {
     code --install-extension runningcoder.react-snippets
     code --install-extension shd101wyy.markdown-preview-enhanced
     Write-Host "Installed VS Code Extensions" -Foreground Green
-
-
+    
     # Configure desired settings
 
     Write-Host "Configuring VS Code settings"
+    $VsCodeSourceSettingsPath = ".\vscode.settings.json"
+    $VsCodeDestinationSettingsPath = "$env:APPDATA\Code\User\settings.json"
 
-    $SettingsPath = "$env:APPDATA\Code\User\settings.json"
-    $JsonSettings = Get-Content -Raw -Path $SettingsPath -ErrorAction silentlycontinue | ConvertFrom-Json
-
-    $DesiredSettings = @{
-        "liveshare.presence"                         = $true;
-        "editor.fontFamily"                          = "'Fira Code', Consolas, 'Courier New', monospace";
-        "editor.fontLigatures"                       = $true;
-        "[html]"                                     = @{
-            "editor.defaultFormatter" = "esbenp.prettier-vscode"
-        };
-        "security.workspace.trust.untrustedFiles"    = "open";
-        "editor.formatOnSave"                        = $true;
-        "[javascriptreact]"                          = @{
-            "editor.defaultFormatter" = "esbenp.prettier-vscode"
-        };
-        "[javascript]"                               = @{
-            "editor.defaultFormatter" = "esbenp.prettier-vscode"
-        };
-        "terminal.integrated.defaultProfile.windows" = "PowerShell"
-    }
-
-    if ($JsonSettings) {
-        foreach ($Setting in $DesiredSettings.GetEnumerator()) {
-            $SettingKey = $Setting.Name
-            $SettingValue = $Setting.Value
-
-            Write-Host "Setting $SettingKey to $($SettingValue | Out-String)"
-
-            if ($JsonSettings.$SettingKey) {
-                $JsonSettings.PSObject.Properties.Remove($SettingKey)
-            }
-            
-            $JsonSettings | Add-Member -Name $SettingKey -Value $SettingValue -MemberType NoteProperty
-        }
-    }
-
-    $JsonSettings | ConvertTo-Json | Out-File $SettingsPath -Encoding utf8
-
+    Copy-Item -Path $VsCodeSourceSettingsPath -Destination $VsCodeDestinationSettingsPath
     Write-Host "VS Code settings configured" -Foreground Green
 
     Write-Host "Configuring Windows Terminal settings"
+    $WindowsTerminalSourceSettingsPath = ".\windows-terminal.settings.json"
+    $WindowsTerminalDestinationSettingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     
-    $SourceSettingsPath = ".\windows-terminal.settings.json"
-    $WindowsTerminalSettingsPath = "$envLocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-    
-    Copy-Item -Path $SourceSettingsPath -Destination $WindowsTerminalSettingsPath
-    
+    Copy-Item -Path $WindowsTerminalSourceSettingsPath -Destination $WindowsTerminalDestinationSettingsPath
     Write-Host "Windows Terminal settings configured" -Foreground Green
 }
 
