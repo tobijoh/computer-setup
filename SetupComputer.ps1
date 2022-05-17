@@ -29,6 +29,7 @@ function ConfigureEnvironment {
     Update-ExecutionPolicy Unrestricted
 
     SetupRestorePoint
+    DisableUac
     SetupPowerOptions
     SetupDirectoryOptions
     CleanUpPreInstalledApps

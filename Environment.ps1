@@ -163,3 +163,14 @@ function InstallFonts {
 
     Remove-Item -Path $FontsTempDirectory -Force -Recurse
 }
+
+function DisableUac {
+    $UacRegistryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+    New-ItemProperty -Path $UacRegistryPath -Name 'ConsentPromptBehaviorAdmin' -Value 0 -PropertyType DWORD -Force | Out-Null
+    New-ItemProperty -Path $UacRegistryPath -Name 'ConsentPromptBehaviorUser' -Value 3 -PropertyType DWORD -Force | Out-Null
+    New-ItemProperty -Path $UacRegistryPath -Name 'EnableInstallerDetection' -Value 1 -PropertyType DWORD -Force | Out-Null
+    New-ItemProperty -Path $UacRegistryPath -Name 'EnableLUA' -Value 1 -PropertyType DWORD -Force | Out-Null
+    New-ItemProperty -Path $UacRegistryPath -Name 'EnableVirtualization' -Value 1 -PropertyType DWORD -Force | Out-Null
+    New-ItemProperty -Path $UacRegistryPath -Name 'PromptOnSecureDesktop' -Value 0 -PropertyType DWORD -Force | Out-Null
+    New-ItemProperty -Path $UacRegistryPath -Name 'ValidateAdminCodeSignatures' -Value 0 -PropertyType DWORD -Force | Out-Null
+}
