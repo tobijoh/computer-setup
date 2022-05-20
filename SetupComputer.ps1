@@ -39,8 +39,16 @@ function ConfigureEnvironment {
 
 function CleanUpDesktop {
     Write-Host "Cleaning desktop"
-    Remove-Item C:\Users\*\Desktop\*lnk
-    Remove-Item C:\Users\*\Desktop\desktop.ini -Force
+    
+    $ThingsToRemove = @(
+        "*lnk",
+        "desktop.ini"
+    )
+
+    foreach ($ThingToRemove in $ThingsToRemove) {
+        Get-ChildItem (Join-Path $env:USERPROFILE "Desktop") -Filter $ThingToRemove -Force | ForEach-Object ($_) { Remove-Item $_.FullName -Force }
+    }
+    
     Write-Host "Desktop cleaned"
 }
 
