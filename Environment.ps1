@@ -132,7 +132,7 @@ function SetGitUser {
 function InstallFonts {
     Write-Host "Installing fonts" -ForegroundColor Magenta
 
-    $WindowsFontsDirectory = "C:\Windows\fonts"
+    $UserInstalledFontsDirectory = "$env:USERPROFILE\AppData\Local\Microsoft\Windows\Fonts"
     $FontsTempDirectory = ".\fonts"
     $FontsObject = (New-Object -ComObject Shell.Application).Namespace(0x14)
 
@@ -152,9 +152,12 @@ function InstallFonts {
 
     foreach ($FontObject in (Get-ChildItem -Path $Source -Include '*.ttf', '*.ttc', '*.otf' -Recurse)) {
         $FontName = $FontObject.Name
-        $FontPath = Join-Path $WindowsFontsDirectory $FontName
+        $FontPath = Join-Path $UserInstalledFontsDirectory $FontName
     
-        if (-Not(Test-Path -Path $FontPath)) {
+        if (Test-Path -Path $FontPath) {
+            Write-Host "Font $FontName already installed, skipping..."
+        }
+        else {
             Write-Host "Installing font: $FontName"
             $FontsObject.CopyHere($FontObject.FullName)
         }
