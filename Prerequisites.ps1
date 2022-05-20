@@ -29,7 +29,9 @@ function InstallScoop {
     else {
         Write-Host "Installing scoop..."
         Write-Host "------------------------------------"
-        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh') -RunAsAdmin
+        Invoke-WebRequest -Uri https://get.scoop.sh -OutFile '.\install-scoop.ps1'
+        Invoke-Expression '.\install-scoop.ps1 -RunAsAdmin'
+        Remove-Item -Path install-scoop.ps1
         Write-Host "Installed scoop" -ForegroundColor Green
     }
 }
