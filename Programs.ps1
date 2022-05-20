@@ -91,10 +91,10 @@ function ConfigureVsCode {
     # Configure desired settings
 
     Write-Host "Configuring VS Code settings"
-    $VsCodeSourceSettingsPath = ".\vscode.settings.json"
+    $VsCodeSourceSettingsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/vscode.settings.json"
     $VsCodeDestinationSettingsPath = "$env:APPDATA\Code\User\settings.json"
 
-    Copy-Item -Path $VsCodeSourceSettingsPath -Destination $VsCodeDestinationSettingsPath
+    Invoke-WebRequest -Uri $VsCodeSourceSettingsPath -OutFile $VsCodeDestinationSettingsPath
     Write-Host "VS Code settings configured" -Foreground Green
 }
 
