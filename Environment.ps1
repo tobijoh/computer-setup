@@ -150,12 +150,13 @@ function InstallFonts {
         Invoke-WebRequest -Uri $FontUrl -OutFile ".\$FontName"
     }
 
-    Get-ChildItem -Path $Source -Include '*.ttf', '*.ttc', '*.otf' -Recurse | ForEach-Object {
-        $FontName = $_.Name
-
-        if (-Not(Test-Path -Path "$WindowsFontsDirectory\$FontName" )) {
+    foreach ($FontObject in (Get-ChildItem -Path $Source -Include '*.ttf', '*.ttc', '*.otf' -Recurse)) {
+        $FontName = $FontObject.Name
+        $FontPath = Join-Path $WindowsFontsDirectory $FontName
+    
+        if (-Not(Test-Path -Path $FontPath)) {
             Write-Host "Installing font: $FontName"
-            $FontsObject.CopyHere($_.FullName)
+            $FontsObject.CopyHere($FontObject.FullName)
         }
     }
 
