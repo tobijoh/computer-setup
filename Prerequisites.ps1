@@ -29,7 +29,7 @@ function InstallScoop {
     else {
         Write-Host "Installing scoop..."
         Write-Host "------------------------------------"
-        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh') -RunAsAdmin
         Write-Host "Installed scoop" -ForegroundColor Green
     }
 }
