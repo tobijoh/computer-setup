@@ -28,6 +28,7 @@ function ConfigureDevelopmentTools {
     ConfigurePowershell
     ConfigureGit
     ConfigureVsCode
+    ConfigureWindowsTerminal
 
     $GitCloneTarget = "C:\dev"
 
@@ -95,7 +96,9 @@ function ConfigureVsCode {
 
     Copy-Item -Path $VsCodeSourceSettingsPath -Destination $VsCodeDestinationSettingsPath
     Write-Host "VS Code settings configured" -Foreground Green
+}
 
+function ConfigureWindowsTerminal {
     Write-Host "Configuring Windows Terminal settings"
     $WindowsTerminalSourceSettingsPath = ".\windows-terminal.settings.json"
     $WindowsTerminalDestinationSettingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
