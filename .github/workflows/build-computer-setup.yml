@@ -25,3 +25,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags')
         with:
           files: ComputerSetup.ps1
+          token: ${{ secrets.ACCESS_TOKEN }}
