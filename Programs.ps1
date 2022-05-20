@@ -100,10 +100,10 @@ function ConfigureVsCode {
 
 function ConfigureWindowsTerminal {
     Write-Host "Configuring Windows Terminal settings"
-    $WindowsTerminalSourceSettingsPath = ".\windows-terminal.settings.json"
+    $WindowsTerminalSourceSettingsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/windows-terminal.settings.json"
     $WindowsTerminalDestinationSettingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     
-    Copy-Item -Path $WindowsTerminalSourceSettingsPath -Destination $WindowsTerminalDestinationSettingsPath
+    Invoke-WebRequest -Uri $WindowsTerminalSourceSettingsPath -OutFile $WindowsTerminalDestinationSettingsPath
     Write-Host "Windows Terminal settings configured" -Foreground Green
 }
 
