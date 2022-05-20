@@ -9,17 +9,21 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
       - name: Generate bundled PowerShell script
-        shell: pwsh
+        shell: python
         run: |
-          $MergedScriptPath = "./ComputerSetup.ps1"
+          prerequisites_script = open('./Prerequisites.ps1', 'r').read()
+          envrionment_script = open('./Environment.ps1', 'r').read()
+          programs_script = open('./Programs.ps1', 'r').read()
 
-          $PrerequisitesScript = Get-Content -Path "./Prerequisites.ps1" -Raw
-          $EnvironmentScript = Get-Content -Path "./Environment.ps1" -Raw
-          $ProgramsScript = Get-Content -Path "./Programs.ps1" -Raw
+          main_script = open('./SetupComputer.ps1', 'r') \
+              .read() \
+              .replace('. .\\Prerequisites.ps1', prerequisites_script) \
+              .replace('. .\\Environment.ps1', envrionment_script) \
+              .replace('. .\\Programs.ps1', programs_script)
 
-          $MainScript = (Get-Content -Path "./SetupComputer.ps1") -Replace '\. \.\\Prerequisites\.ps1', $PrerequisitesScript -Replace '\. \.\\Environment\.ps1', $EnvironmentScript -Replace '\. \.\\Programs\.ps1', $ProgramsScript
-
-          Set-Content -Value $MainScript -Path $MergedScriptPath
+          merged_script = open('ComputerSetup.ps1', 'w')
+          merged_script.write(main_script)
+          merged_script.close()
       - name: Create release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags')
