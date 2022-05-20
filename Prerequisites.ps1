@@ -5,7 +5,7 @@ function InstallChocolatey {
     else {
         Write-Host "Installing Chocolatey first..."
         Write-Host "------------------------------------"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
         Write-Host "Installed Chocolatey" -ForegroundColor Green
     }
 }
@@ -17,7 +17,7 @@ function InstallBoxstarter {
     else {
         Write-Host "Installing Boxstarter..."
         Write-Host "------------------------------------"
-        . { iwr -useb https://boxstarter.org/bootstrapper.ps1 } | iex; Get-Boxstarter -Force
+        . { Invoke-WebRequest -useb https://boxstarter.org/bootstrapper.ps1 } | Invoke-Expression; Get-Boxstarter -Force
         Write-Host "Installed Boxstarter" -ForegroundColor Green
     }
 }
