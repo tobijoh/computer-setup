@@ -30,7 +30,7 @@ function ConfigureDevelopmentTools {
     ConfigureVsCode
     ConfigureWindowsTerminal
 
-    $GitCloneTarget = "C:\dev"
+    $GitCloneTarget = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_PROJECT_BASE_DIRECTORY", "User")
 
     if (!(Test-Path $GitCloneTarget)) {
         mkdir $GitCloneTarget
