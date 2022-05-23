@@ -1,5 +1,6 @@
 function InstallPrograms {
     Write-Host "Installing programs using choco or scoop"
+    choco install 7zip.install -y
     choco install git -y
     choco install poshgit -y
     choco install microsoft-edge -y
