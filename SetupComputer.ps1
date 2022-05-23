@@ -31,6 +31,7 @@ function ConfigureEnvironment {
     SetupRestorePoint
     DisableUac
     AddWindowsSecurityExceptions
+    RestoreClassicContextMenuInWindows11
     SetupPowerOptions
     SetupDirectoryOptions
     CleanUpPreInstalledApps

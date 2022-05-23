@@ -223,3 +223,13 @@ function AddWindowsSecurityExceptions {
     $WindowsSecurityPreferences.ExclusionPath
     $WindowsSecurityPreferences.ExclusionProcess
 }
+
+RestoreClassicContextMenuInWindows11 {
+    $ContextMenuRegistryPath = "HKCU:\SOFTWARE\Classes\CLSID"
+    $ContextMenuRegistryKey = "{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}"
+
+    New-Item -Path $ContextMenuRegistryPath -Name $ContextMenuRegistryKey
+    New-ItemProperty -Path (Join-Path $ContextMenuRegistryPath $ContextMenuRegistryKey) -Name "InprocServer32" -Value ""
+
+    Invoke-Reboot
+}
