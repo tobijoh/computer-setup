@@ -30,6 +30,7 @@ function ConfigureEnvironment {
 
     SetupRestorePoint
     DisableUac
+    AddWindowsSecurityExceptions
     SetupPowerOptions
     SetupDirectoryOptions
     CleanUpPreInstalledApps

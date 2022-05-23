@@ -178,3 +178,48 @@ function DisableUac {
     New-ItemProperty -Path $UacRegistryPath -Name 'PromptOnSecureDesktop' -Value 0 -PropertyType DWORD -Force | Out-Null
     New-ItemProperty -Path $UacRegistryPath -Name 'ValidateAdminCodeSignatures' -Value 0 -PropertyType DWORD -Force | Out-Null
 }
+
+function AddWindowsSecurityExceptions {
+    $PathExclusions = @(
+        "C:\Windows\Microsoft.NET",
+        "C:\Windows\assembly",
+        (Join-Path $env:USERPROFILE "AppData\Local\Microsoft\VisualStudio"),
+        (Join-Path $env:USERPROFILE ".nuget\packages"),
+        "C:\ProgramData\Microsoft\VisualStudio\Packages",
+        "C:\Program Files (x86)\MSBuild",
+        "C:\Program Files (x86)\Microsoft Visual Studio",
+        "C:\Program Files (x86)\Microsoft SDKs",
+        "C:\Program Files\Microsoft VS Code",
+        (Join-Path $env:USERPROFILE "AppData\Roaming\npm-cache"),
+        [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_PROJECT_BASE_DIRECTORY", "User")
+    )
+
+    $ProcessExclusions = @(
+        "rider64.exe",
+        "devenv.exe",
+        "dotnet.exe",
+        "msbuild.exe",
+        "node.exe",
+        "node.js",
+        "perfwatson2.exe",
+        "ServiceHub.Host.Node.x86.exe",
+        "vbcscompiler.exe"
+    )
+
+    foreach ($Exclusion in $PathExclusions) {
+        Write-Host "Adding Path Exclusion: " $Exclusion
+        Add-MpPreference -ExclusionPath $Exclusion
+    }
+
+    foreach ($Exclusion in $ProcessExclusions) {
+        Write-Host "Adding Process Exclusion: " $Exclusion
+        Add-MpPreference -ExclusionProcess $Exclusion
+    }
+
+    Write-Host ""
+    Write-Host "These exclusions are now added to Windows Security:"
+
+    $WindowsSecurityPreferences = Get-MpPreference
+    $WindowsSecurityPreferences.ExclusionPath
+    $WindowsSecurityPreferences.ExclusionProcess
+}
