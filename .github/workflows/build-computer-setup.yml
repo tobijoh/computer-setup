@@ -12,13 +12,13 @@ jobs:
         shell: python
         run: |
           prerequisites_script = open('./Prerequisites.ps1', 'r').read()
-          envrionment_script = open('./Environment.ps1', 'r').read()
+          environment_script = open('./Environment.ps1', 'r').read()
           programs_script = open('./Programs.ps1', 'r').read()
 
           main_script = open('./SetupComputer.ps1', 'r') \
               .read() \
               .replace('. .\\Prerequisites.ps1', prerequisites_script) \
-              .replace('. .\\Environment.ps1', envrionment_script) \
+              .replace('. .\\Environment.ps1', environment_script) \
               .replace('. .\\Programs.ps1', programs_script)
 
           merged_script = open('ComputerSetup.ps1', 'w')
