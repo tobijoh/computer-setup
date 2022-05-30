@@ -28,6 +28,7 @@ function InstallPrograms {
 function ConfigureDevelopmentTools {
     ConfigurePowershell
     ConfigureGit
+    CreateSshKey
     ConfigureVsCode
     ConfigureWindowsTerminal
 
@@ -106,6 +107,17 @@ function ConfigureWindowsTerminal {
     
     Invoke-WebRequest -Uri $WindowsTerminalSourceSettingsPath -OutFile $WindowsTerminalDestinationSettingsPath
     Write-Host "Windows Terminal settings configured" -Foreground Green
+}
+
+function CreateSshKey {
+    Write-Host "Creating an SSH key"
+
+    $Email = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_EMAIL", "User")
+    $SshPath = Join-Path $env:USERPROFILE ".ssh" "id_ed25519"
+
+    & ssh-keygen -t ed25519 -C $Email -N '""' -f $SshPath
+
+    Write-Host "SSH key successfully created"
 }
 
 # HELPER FUNCTIONS
