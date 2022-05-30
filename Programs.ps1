@@ -62,6 +62,7 @@ function ConfigureGit {
     git config --global diff.tool vscode
     git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
     git config --global alias.co "checkout"
+    git config --global alias.cob "checkout -b"
     git config --global alias.oops "commit --amend --no-edit"
     git config --global alias.a "add --patch"
     git config --global alias.please "push --force-with-lease"
@@ -73,6 +74,8 @@ function ConfigureGit {
     git config --global alias.mr "push -u -o merge_request.create -o merge_request.remove_source_branch"
     git config --global alias.dotnetformat '!git rebase --interactive --exec "dotnet format ./src && git commit -a --allow-empty --fixup=HEAD" --strategy-option=theirs origin/$(git main)'
     git config --global alias.main "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4"
+    git config --global alias.cge "config --global -e"
+    git config --global alias.pt "push origin --tags"
 }
 
 function ConfigureVsCode {
