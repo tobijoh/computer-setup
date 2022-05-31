@@ -19,6 +19,7 @@ function InstallPrograms {
     choco install spotify -y
     choco install ditto --pre -y
     choco install postman -y
+    choco install foxitreader -y
     scoop install yarn
     scoop install sudo
     scoop install pwsh
