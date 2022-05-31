@@ -224,16 +224,40 @@ function AddWindowsSecurityExceptions {
     $WindowsSecurityPreferences.ExclusionProcess
 }
 
-RestoreClassicContextMenuInWindows11 {
+function RestoreClassicContextMenuInWindows11 {
     Write-Host "Restoring old Windows 10 context menu in Windows 11"
 
-    $ContextMenuRegistryPath = "HKCU:\SOFTWARE\Classes\CLSID"
-    $ContextMenuRegistryKey = "{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}"
-
-    New-Item -Path $ContextMenuRegistryPath -Name $ContextMenuRegistryKey
-    New-ItemProperty -Path (Join-Path $ContextMenuRegistryPath $ContextMenuRegistryKey) -Name "InprocServer32" -Value ""
+    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Value "" -Force
 
     Write-Host "Context menu restored, rebooting to make the change apply"
 
     Invoke-Reboot
+}
+
+function DisableStartupPrograms {
+    Write-Host "Disabling startup programs"
+
+    $DisableList = @(
+        "Spotify"
+    )
+
+    $LocalMachinePath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run"
+    $CurrentUserPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run"
+
+    foreach ($Application in $DisableList) {
+        $IsLocalMachineSetting = (Get-Item $LocalMachinePath -ErrorAction Ignore).Property -contains $Application
+        $IsCurrentUserSetting = (Get-Item $CurrentUserPath -ErrorAction Ignore).Property -contains $Application
+
+        if ($IsLocalMachineSetting) {
+            Write-Host "Disabling $Application for local machine"
+            Set-ItemProperty -Path $LocalMachinePath -Name $Application -Value ([byte[]](0x33, 0x32, 0xFF))
+        }
+
+        if ($IsCurrentUserSetting) {
+            Write-Host "Disabling $Application for current user"
+            Set-ItemProperty -Path $CurrentUserPath -Name $Application -Value ([byte[]](0x33, 0x32, 0xFF))
+        }
+    }
+
+    Write-Host "Startup programs disabled"
 }

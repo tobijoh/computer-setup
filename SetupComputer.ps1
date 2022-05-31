@@ -37,6 +37,7 @@ function ConfigureEnvironment {
     CleanUpPreInstalledApps
     InstallWindowsSubsystemForLinux
     InstallFonts
+    DisableStartupPrograms
 }
 
 function CleanUpDesktop {
