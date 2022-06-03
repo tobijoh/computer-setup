@@ -77,7 +77,7 @@ function ConfigureGit {
     git config --global alias.r '!git fetch; git rebase origin/$(git main) -i --autosquash'
     git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
     git config --global alias.mr "push -u -o merge_request.create -o merge_request.remove_source_branch"
-    git config --global alias.dotnetformat '!git rebase --interactive --exec "dotnet format ./src && git commit -a --allow-empty --fixup=HEAD" --strategy-option=theirs origin/$(git main)'
+    git config --global alias.dotnetformat "!git rebase --interactive --exec 'dotnet format ./src && git commit -a --allow-empty --fixup=HEAD' --strategy-option=theirs origin/`$(git main)"
     git config --global alias.main "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4"
     git config --global alias.cge "config --global -e"
     git config --global alias.pt "push origin --tags"
