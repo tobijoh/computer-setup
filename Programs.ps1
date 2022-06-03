@@ -20,6 +20,8 @@ function InstallPrograms {
     choco install ditto --pre -y
     choco install postman -y
     choco install foxitreader -y
+    choco install miktex -y --force
+    choco install strawberryperl -y
     scoop install yarn
     scoop install sudo
     scoop install pwsh
@@ -32,6 +34,7 @@ function ConfigureDevelopmentTools {
     CreateSshKey
     ConfigureVsCode
     ConfigureWindowsTerminal
+    ConfigureLaTeX
 
     $GitCloneTarget = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_PROJECT_BASE_DIRECTORY", "User")
 
@@ -92,6 +95,8 @@ function ConfigureVsCode {
     code --install-extension PKief.material-icon-theme
     code --install-extension runningcoder.react-snippets
     code --install-extension shd101wyy.markdown-preview-enhanced
+    code --install-extension James-Yu.latex-workshop
+    code --install-extension tecosaur.latex-utilities
     Write-Host "Installed VS Code Extensions" -Foreground Green
     
     # Configure desired settings
@@ -111,6 +116,19 @@ function ConfigureWindowsTerminal {
     
     Invoke-WebRequest -Uri $WindowsTerminalSourceSettingsPath -OutFile $WindowsTerminalDestinationSettingsPath
     Write-Host "Windows Terminal settings configured" -Foreground Green
+}
+
+function ConfigureLaTeX {
+    $ThingsToAddToPath = @(
+        "C:\Program Files\MiKTeX\miktex\bin\x64",
+        "C:\Strawberry\c\bin",
+        "C:\Strawberry\perl\site\bin",
+        "C:\Strawberry\perl\bin"
+    )
+
+    foreach ($ThingToAddToPath in $ThingsToAddToPath) {
+        [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$ThingToAddToPath", [EnvironmentVariableTarget]::User)
+    }
 }
 
 function CreateSshKey {
