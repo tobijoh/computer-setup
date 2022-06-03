@@ -22,6 +22,7 @@ function InstallPrograms {
     choco install foxitreader -y
     choco install miktex -y --force
     choco install strawberryperl -y
+    choco install linqpad -y
     scoop install yarn
     scoop install sudo
     scoop install pwsh
