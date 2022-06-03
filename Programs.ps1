@@ -137,7 +137,7 @@ function CreateSshKey {
     $Email = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_EMAIL", "User")
     $SshPath = Join-Path $env:USERPROFILE ".ssh" "id_ed25519"
 
-    Invoke-Expression "ssh-keygen -t ed25519 -C $Email -f $SshPath -N '""'"
+    & ssh-keygen -t ed25519 -C "$Email" -f "$SshPath" -N "''"
 
     Write-Host "SSH key successfully created"
 }
