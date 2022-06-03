@@ -31,7 +31,7 @@
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
     "profiles": {
       "defaults": {
-        "colorScheme": "BirdsOfParadise"
+        "colorScheme": "WildCherry"
       },
       "list": [
         {
@@ -88,6 +88,29 @@
         "selectionBackground": "#563C27",
         "white": "#E0DBB7",
         "yellow": "#E99D2A"
+      },
+      {
+        "name": "WildCherry",
+        "black": "#000507",
+        "red": "#d94085",
+        "green": "#2ab250",
+        "yellow": "#ffd16f",
+        "blue": "#883cdc",
+        "purple": "#ececec",
+        "cyan": "#c1b8b7",
+        "white": "#fff8de",
+        "brightBlack": "#009cc9",
+        "brightRed": "#da6bac",
+        "brightGreen": "#f4dca5",
+        "brightYellow": "#eac066",
+        "brightBlue": "#308cba",
+        "brightPurple": "#ae636b",
+        "brightCyan": "#ff919d",
+        "brightWhite": "#e4838d",
+        "background": "#1f1726",
+        "foreground": "#dafaff",
+        "selectionBackground": "#002831",
+        "cursorColor": "#dd00ff"
       },
       {
         "background": "#0C0C0C",
