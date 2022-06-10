@@ -35,6 +35,7 @@ function ConfigureDevelopmentTools {
     CreateSshKey
     ConfigureVsCode
     ConfigureWindowsTerminal
+    InstallMicrosoftEdgeExtensions
     ConfigureLaTeX
 
     $GitCloneTarget = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_PROJECT_BASE_DIRECTORY", "User")
@@ -143,6 +144,45 @@ function CreateSshKey {
     Write-Host "SSH key successfully created"
 }
 
+function InstallMicrosoftEdgeExtensions {    
+    Write-Host "Installing Microsoft Edge extensions" -ForegroundColor Magenta
+    
+    $ExtensionRegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist"
+    
+    if (!(Test-Path $ExtensionRegistryPath)) {
+        New-Item $ExtensionRegistryPath -Force
+    }
+    
+    # Then add the new extensions (if not already installed)
+    $ExtensionList = @{
+        "dneaehbmnbhcippjikoajpoabadpodje" = "Old Reddit Redirect"
+        "fmkadmapgofadopljbjfkapdkoienihi" = "React Developer Tools"
+        "lmhkpmbekcpmknklioeibfkpmmfibljd" = "Redux DevTools"
+        "mnjggcdmjocbbbhaepdhchncahnbgone" = "SponsorBlock for YouTube"
+        "dhdgffkkebhmkfjojejmpbldmpobfkfo" = "TamperMonkey"
+        "cjpalhdlnbpafiamejdnhcphjbkeiagm" = "uBlock Origin"
+    }
+    
+    foreach ($Extension in $ExtensionList.GetEnumerator()) {
+        $ExistingExtensions = Get-RegistryKeyPropertiesAndValues -Path $ExtensionRegistryPath
+        $ExtensionNumber = $null -eq $ExistingExtensions ? 1 : $ExistingExtensions[-1].Property + 1
+        
+        $ExtensionId = "$($Extension.Name);https://clients2.google.com/service/update2/crx"
+    
+        if ($ExistingExtensions | Where-Object { $_.Value -eq $ExtensionId }) {
+            Write-Host "$($Extension.Value) is already installed, skipping..."
+        }
+        else {
+            Write-Host "Installing $($Extension.Value)..."
+            $ExtensionRegistryKey = $ExtensionNumber
+            New-ItemProperty -Path $ExtensionRegistryPath -PropertyType String -Name $ExtensionRegistryKey -Value $ExtensionId | Out-Null
+            Write-Host "Done!"
+        }
+    }
+    
+    Write-Host "Extensions installed" -ForegroundColor Green
+}
+
 # HELPER FUNCTIONS
 function Add-ToPowerShellProfile($Find, $Content) {
     if (!( Test-Path $Profile )) { 
@@ -155,4 +195,20 @@ function Add-ToPowerShellProfile($Find, $Content) {
     if (!($CurrentProfileContent -Like $Find)) {
         $Content | Add-Content $Profile -Encoding UTF8
     }
+}
+
+function Get-RegistryKeyPropertiesAndValues {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path)
+
+    Push-Location
+    Set-Location -Path $Path
+    Get-Item . |
+    Select-Object -ExpandProperty Property |
+    ForEach-Object {
+        New-Object PSObject -Property @{"Property" = $_;
+            "Value"                                = (Get-ItemProperty -Path . -Name $_).$_
+        } }
+    Pop-Location
 }
