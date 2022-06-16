@@ -11,15 +11,21 @@ jobs:
       - name: Generate bundled PowerShell script
         shell: python
         run: |
-          prerequisites_script = open('./Prerequisites.ps1', 'r').read()
-          environment_script = open('./Environment.ps1', 'r').read()
-          programs_script = open('./Programs.ps1', 'r').read()
+          import re
 
-          main_script = open('./SetupComputer.ps1', 'r') \
-              .read() \
-              .replace('. .\\Prerequisites.ps1', prerequisites_script) \
-              .replace('. .\\Environment.ps1', environment_script) \
-              .replace('. .\\Programs.ps1', programs_script)
+          def replace_script_import(match):
+              script_name = match.group(1)
+              return import_script('./' + script_name)
+
+          def import_script(script_name):
+              script = open(script_name, 'r').read()
+              return re.sub(
+                  r'\. \.\\(\S+)',
+                  replace_script_import,
+                  script
+              )
+
+          main_script = import_script('./SetupComputer.ps1')
 
           merged_script = open('ComputerSetup.ps1', 'w')
           merged_script.write(main_script)
