@@ -36,6 +36,7 @@ function ConfigureDevelopmentTools {
     ConfigureVsCode
     ConfigureWindowsTerminal
     InstallMicrosoftEdgeExtensions
+    SetMicrosoftEdgeStartPage
     ConfigureLaTeX
 
     $GitCloneTarget = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_PROJECT_BASE_DIRECTORY", "User")
@@ -181,6 +182,28 @@ function InstallMicrosoftEdgeExtensions {
     }
     
     Write-Host "Extensions installed" -ForegroundColor Green
+}
+
+function SetMicrosoftEdgeStartPage {
+    Write-Host "Setting Microsoft Edge start page..." -ForegroundColor Magenta
+
+    $StartPageUrl = 'https://google.com'
+    $EdgeRegistryKey = "HKCU:\Software\Policies\Microsoft\Edge"
+
+    if ( -Not (Test-Path $EdgeRegistryKey)) {
+        New-Item -Path $EdgeRegistryKey | Out-Null
+    }
+
+    Set-ItemProperty -Path $EdgeRegistryKey -Name "RestoreOnStartup" -Value 4 -Type "DWORD"
+
+    $EdgeStartupUrlRegistryKey = "$EdgeRegistryKey\RestoreOnStartupURLs"
+    if (-Not (Test-Path $EdgeStartupUrlRegistryKey)) {
+        New-Item -Path $EdgeStartupUrlRegistryKey | Out-Null
+    }
+
+    Set-ItemProperty -Path $EdgeStartupUrlRegistryKey -Name '1' -Value $StartPageUrl
+
+    Write-Host "Done!" -Foreground Green
 }
 
 # HELPER FUNCTIONS
