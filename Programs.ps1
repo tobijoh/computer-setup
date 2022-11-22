@@ -51,13 +51,19 @@ function ConfigurePowershell {
     Install-Module -Name z -RequiredVersion 1.1.10 -AllowClobber
     Install-Module psreadline -Force
 
-    Add-ToPowerShellProfile -Find "*Set-PSReadLineOption*" -Content @("
+    Add-ToPowerShellProfile -Find "*Set-PSReadLineOption*" -Content @('
     Set-PSReadLineOption -PredictionSource History
     Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
     Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+
+    # Shows navigable menu of all options when hitting Tab
+    Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+    
     Import-Module posh-git
-    Set-Alias g git
-    ")
+    Set-Alias g git    
+
+    $GitPromptSettings.EnableStashStatus = $true
+    ')
 }
 
 function ConfigureGit {
