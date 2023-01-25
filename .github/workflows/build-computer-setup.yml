@@ -37,4 +37,5 @@ jobs:
           files: |
             ComputerSetup.ps1
             *.settings.json
+            *.omp.json
           token: ${{ secrets.ACCESS_TOKEN }}
