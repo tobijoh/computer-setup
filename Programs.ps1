@@ -1,5 +1,6 @@
 function InstallPrograms {
     Write-Host "Installing programs using choco or scoop"
+    
     choco install 7zip.install -y
     choco install git -y
     choco install poshgit -y
@@ -26,6 +27,8 @@ function InstallPrograms {
     scoop install yarn
     scoop install sudo
     scoop install pwsh
+    scoop install https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/oh-my-posh.json
+
     Write-Host "Installed programs" -Foreground green
 }
 
@@ -63,6 +66,8 @@ function ConfigurePowershell {
     Set-Alias g git    
 
     $GitPromptSettings.EnableStashStatus = $true
+
+    oh-my-posh init pwsh --config "https://github.com/tobijoh/computer-setup/releases/latest/download/theme.omp.json" | Invoke-Expression
     ')
 }
 
