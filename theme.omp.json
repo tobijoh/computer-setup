@@ -5,41 +5,56 @@
       "alignment": "left",
       "segments": [
         {
-          "background": "#546E7A",
+          "template": "\n",
+          "type": "text",
+          "style": "plain"
+        }
+      ],
+      "type": "prompt"
+    },
+    {
+      "alignment": "left",
+      "segments": [
+        {
+          "background": "#34444c",
           "foreground": "#26C6DA",
           "style": "plain",
           "template": " {{ if .WSL }}WSL at {{ end }}{{.Icon}} \ue0b1",
           "type": "os"
         },
         {
-          "background": "#546E7A",
+          "background": "#34444c",
           "foreground": "#26C6DA",
           "style": "plain",
           "template": " \uf0e7 ",
           "type": "root"
         },
         {
-          "background": "#546E7A",
+          "background": "#34444c",
           "foreground": "#26C6DA",
           "properties": {
-            "style": "full"
+            "style": "agnoster_short",
+            "mapped_locations": {
+              "C:\\dev": "dev",
+              "C:\\Users\\tobias.johansson_tra\\source\\kit-consulting": "kit"
+            }
           },
           "style": "plain",
-          "template": " {{ .Path }} ",
+          "template": " {{ .Path }}",
           "type": "path"
         },
         {
-          "background": "#546E7A",
+          "background": "#34444c",
           "foreground": "#D4E157",
           "style": "plain",
-          "template": "<#26C6DA>\ue0b1 </>{{ .HEAD }} ",
+          "template": "{{ if .Env.POSH_GIT_STRING }} {{ .Env.POSH_GIT_STRING }} {{ end }}",
           "type": "git"
         },
         {
           "background": "transparent",
-          "foreground": "#546E7A",
+          "foreground": "#34444c",
           "style": "plain",
-          "template": "\ue0b0",
+          "template": "\ue0b0 ",
           "type": "text"
         }
       ],
