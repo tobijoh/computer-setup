@@ -16,22 +16,22 @@
       "alignment": "left",
       "segments": [
         {
-          "background": "#34444c",
-          "foreground": "#26C6DA",
+          "background": "#424242",
+          "foreground": "#5ee6f8",
           "style": "plain",
           "template": " {{ if .WSL }}WSL at {{ end }}{{.Icon}} \ue0b1",
           "type": "os"
         },
         {
-          "background": "#34444c",
-          "foreground": "#26C6DA",
+          "background": "#424242",
+          "foreground": "#5ee6f8",
           "style": "plain",
           "template": " \uf0e7 ",
           "type": "root"
         },
         {
-          "background": "#34444c",
-          "foreground": "#26C6DA",
+          "background": "#424242",
+          "foreground": "#5ee6f8",
           "properties": {
             "style": "agnoster_short",
             "mapped_locations": {
@@ -44,15 +44,15 @@
           "type": "path"
         },
         {
-          "background": "#34444c",
-          "foreground": "#D4E157",
+          "background": "#424242",
+          "foreground": "#5ee6f8",
           "style": "plain",
           "template": "{{ if .Env.POSH_GIT_STRING }} {{ .Env.POSH_GIT_STRING }} {{ end }}",
           "type": "git"
         },
         {
           "background": "transparent",
-          "foreground": "#34444c",
+          "foreground": "#424242",
           "style": "plain",
           "template": "\ue0b0 ",
           "type": "text"
