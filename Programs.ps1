@@ -68,6 +68,13 @@ function ConfigurePowershell {
     $GitPromptSettings.EnableStashStatus = $true
 
     oh-my-posh init pwsh --config "https://github.com/tobijoh/computer-setup/releases/latest/download/theme.omp.json" | Invoke-Expression
+
+    function Set-PoshGitStatus {
+        $global:GitStatus = Get-GitStatus
+        $env:POSH_GIT_STRING = Write-GitStatus -Status $global:GitStatus
+    }
+    
+    New-Alias -Name "Set-PoshContext" -Value "Set-PoshGitStatus" -Scope Global -Force
     ')
 }
 
