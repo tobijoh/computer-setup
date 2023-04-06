@@ -91,12 +91,9 @@ function ConfigureGit {
     git config --global alias.oops "commit --amend --no-edit"
     git config --global alias.a "add --patch"
     git config --global alias.please "push --force-with-lease"
-    git config --global alias.navigate "!git add . && git commit -m 'WIP-mob' --allow-empty --no-verify && git push -u --no-verify"
-    git config --global alias.drive "!git pull --rebase && git log -1 --stat && git reset HEAD^ && git push --force-with-lease"
     git config --global pull.rebase true
     git config --global alias.r '!git fetch; git rebase origin/$(git main) -i --autosquash'
     git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-    git config --global alias.mr "push -u -o merge_request.create -o merge_request.remove_source_branch"
     git config --global alias.dotnetformat "!git rebase --interactive --exec 'dotnet format ./src && git commit -a --allow-empty --fixup=HEAD' --strategy-option=theirs origin/`$(git main)"
     git config --global alias.main "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4"
     git config --global alias.cge "config --global -e"
@@ -184,7 +181,12 @@ function InstallMicrosoftEdgeExtensions {
     
     foreach ($Extension in $ExtensionList.GetEnumerator()) {
         $ExistingExtensions = Get-RegistryKeyPropertiesAndValues -Path $ExtensionRegistryPath
-        $ExtensionNumber = $null -eq $ExistingExtensions ? 1 : $ExistingExtensions[-1].Property + 1
+        $ExtensionNumber = 0
+        if($null -eq $ExistingExtensions) {
+            $ExtensionNumber = 1
+        } else {
+            $ExtensionNumber = $ExistingExtensions[-1].Property + 1
+        }
         
         $ExtensionId = "$($Extension.Name);https://clients2.google.com/service/update2/crx"
     
@@ -208,7 +210,7 @@ function SetMicrosoftEdgeStartPage {
     $StartPageUrl = 'https://google.com'
     $EdgeRegistryKey = "HKCU:\Software\Policies\Microsoft\Edge"
 
-    if ( -Not (Test-Path $EdgeRegistryKey)) {
+    if (-Not (Test-Path $EdgeRegistryKey)) {
         New-Item -Path $EdgeRegistryKey | Out-Null
     }
 
