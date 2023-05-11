@@ -24,6 +24,7 @@ function InstallPrograms {
     choco install miktex -y --force
     choco install strawberryperl -y
     choco install linqpad -y
+    choco install powertoys -y
     scoop install yarn
     scoop install sudo
     scoop install pwsh
@@ -75,6 +76,27 @@ function ConfigurePowershell {
     }
     
     New-Alias -Name "Set-PoshContext" -Value "Set-PoshGitStatus" -Scope Global -Force
+
+    function Open-Solution($solution, $ide = "rider") {
+        $rider = "C:\Users\3403\AppData\Local\JetBrains\Installations\Rider231\bin\rider64.exe"
+        $riderWorkDir = "C:\Users\3403\AppData\Local\JetBrains\Installations\Rider231\bin\"
+        $vs22 = "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.exe" 
+        $vs22WorkDir = "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\"
+        
+        if (!$solution) {
+            $solution = Get-ChildItem -Filter "*.sln" | Select-Object -First 1
+        }
+    
+        if (!$solution) {
+            $solution = Get-ChildItem -Filter "*.csproj" | Select-Object -First 1
+        }
+    
+        if ($ide -eq "rider") {
+            Start-Process $rider -WorkingDirectory $riderWorkDir -ArgumentList $solution
+        } else {
+            Start-Process $vs22 -WorkingDirectory $vs22WorkDir -ArgumentList $solution
+        }
+    }
     ')
 }
 
