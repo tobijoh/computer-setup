@@ -25,6 +25,10 @@ function InstallPrograms {
     choco install strawberryperl -y
     choco install linqpad -y
     choco install powertoys -y
+    choco install fzf -y
+    choco install logseq -y
+    scoop bucket add extras
+    scoop install psfzf
     scoop install yarn
     scoop install sudo
     scoop install pwsh
