@@ -10,7 +10,8 @@
           "style": "plain"
         }
       ],
-      "type": "prompt"
+      "type": "prompt",
+      "newline": true
     },
     {
       "alignment": "left",
