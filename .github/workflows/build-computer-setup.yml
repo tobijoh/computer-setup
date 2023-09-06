@@ -38,4 +38,5 @@ jobs:
             ComputerSetup.ps1
             *.settings.json
             *.omp.json
+            neovim/*.lua
           token: ${{ secrets.ACCESS_TOKEN }}

@@ -27,12 +27,15 @@ function InstallPrograms {
     choco install powertoys -y
     choco install fzf -y
     choco install logseq -y
+    choco install ripgrep -y
+    choco install fd -y
     scoop bucket add extras
     scoop install psfzf
     scoop install yarn
     scoop install sudo
     scoop install pwsh
     scoop install https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/oh-my-posh.json
+    scoop install neovim
 
     Write-Host "Installed programs" -Foreground green
 }
@@ -46,6 +49,7 @@ function ConfigureDevelopmentTools {
     InstallMicrosoftEdgeExtensions
     SetMicrosoftEdgeStartPage
     ConfigureLaTeX
+    Configure-NeoVim
 
     $GitCloneTarget = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_PROJECT_BASE_DIRECTORY", "User")
 
@@ -250,6 +254,31 @@ function SetMicrosoftEdgeStartPage {
     Set-ItemProperty -Path $EdgeStartupUrlRegistryKey -Name '1' -Value $StartPageUrl
 
     Write-Host "Done!" -Foreground Green
+}
+
+function Configure-NeoVim {
+    Write-Host "Configuring NeoVim"
+
+    # Install vim-plug
+    Invoke-WebRequest https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | New-Item "$env:LOCALAPPDATA/nvim/autoload/plug.vim" -Force
+
+    # Fetch settings and plugins
+    $NeoVimDestinationPath = "$env:LOCALAPPDATA\neovim"
+
+    $NeoVimSourceSettingsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/neovim/init.lua"
+    $NeoVimDestinationSettingsPath = "$NeoVimDetinationPath\init.lua"
+    
+    Invoke-WebRequest -Uri $NeoVimSourceSettingsPath -OutFile $NeoVimDestinationSettingsPath
+
+    $NeoVimSourcePluginsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/neovim/plugins.lua"
+    $NeoVimDestinationPluginsPath = "$NeoVimDetinationPath\lua\plugins.lua"
+    
+    Invoke-WebRequest -Uri $NeoVimSourcePluginsPath -OutFile $NeoVimDestinationPluginsPath
+
+    # Install plugins
+    & nvim --headless +PlugInstall +qa
+
+    Write-Host "NeoVim configured" -Foreground Green
 }
 
 # HELPER FUNCTIONS
