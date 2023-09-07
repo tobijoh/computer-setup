@@ -106,9 +106,14 @@ function InstallWindowsSubsystemForLinux {
     refreshenv
     wsl --set-default-version 2
     wsl --update
-    if (!((wsl --list --all) -Like "*Ubuntu*")) {
-        wsl --install --distribution Ubuntu
+
+    $MachineType = Get-CimInstance Win32_ComputerSystem | Select-Object Model
+    if (($MachineType -ne "Virtual Machine") -and ($MachineType -ne "VMware Virtual Platform") -and ($MachineType -ne "VirtualBox")) {
+        if (!((wsl --list --all) -Like "*Ubuntu*")) {
+            wsl --install --distribution Ubuntu
+        }
     }
+
 }
 
 function RunWindowsUpdate {
