@@ -46,6 +46,7 @@ function ConfigureDevelopmentTools {
     CreateSshKey
     ConfigureVsCode
     ConfigureWindowsTerminal
+    ConfigureFirefox
     InstallMicrosoftEdgeExtensions
     SetMicrosoftEdgeStartPage
     ConfigureLaTeX
@@ -166,6 +167,32 @@ function ConfigureWindowsTerminal {
     Write-Host "Windows Terminal settings configured" -Foreground Green
 }
 
+function ConfigureFirefox {
+    Write-Host "Configuring Firefox settings..."
+
+    # Get the path to the user's Firefox profile folder
+    $FirefoxProfilesFolder = [System.IO.Path]::Combine($env:APPDATA, "Mozilla\Firefox\Profiles")
+
+    # List all the profile folders in the Firefox profile directory
+    $ProfileFolders = Get-ChildItem $FirefoxProfilesFolder -Directory
+
+    # Loop through each profile folder and find the userContent.css file
+    foreach ($ProfileFolder in $ProfileFolders) {
+        if ((Get-ChildItem -Path $ProfileFolder.FullName -Directory).Count -gt 0) {
+            Write-Host "Found Firefox profile $ProfileFolder, adding settings..."
+            $UserChromeCssPath = [System.IO.Path]::Combine($ProfileFolder.FullName, "chrome")
+
+            if (-not (Test-Path -Path $UserChromeCssPath -PathType Container)) {
+                New-Item -Path $UserChromeCssPath -ItemType Directory -Force
+            }
+
+            Invoke-WebRequest -Uri "https://github.com/tobijoh/computer-setup/releases/latest/download/firefox/userChrome.css" -OutFile "$UserChromeCssPath\userChrome.css"
+        }
+    }
+
+    Write-Host "Firefox settings configured" -ForegroundColor Green
+}
+
 function ConfigureLaTeX {
     $ThingsToAddToPath = @(
         "C:\Program Files\MiKTeX\miktex\bin\x64",
@@ -212,9 +239,10 @@ function InstallMicrosoftEdgeExtensions {
     foreach ($Extension in $ExtensionList.GetEnumerator()) {
         $ExistingExtensions = Get-RegistryKeyPropertiesAndValues -Path $ExtensionRegistryPath
         $ExtensionNumber = 0
-        if($null -eq $ExistingExtensions) {
+        if ($null -eq $ExistingExtensions) {
             $ExtensionNumber = 1
-        } else {
+        }
+        else {
             $ExtensionNumber = $ExistingExtensions[-1].Property + 1
         }
         
