@@ -36,8 +36,9 @@ jobs:
         with:
           files: |
             ComputerSetup.ps1
-            *.settings.json
-            *.omp.json
+            windows-terminal/windows-terminal.settings.json
+            vscode/vscode.settings.json
+            oh-my-posh/theme.omp.json
             neovim/*.lua
             firefox/userChrome.css
           token: ${{ secrets.ACCESS_TOKEN }}
