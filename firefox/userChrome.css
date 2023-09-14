@@ -1,0 +1,9 @@
+/* Hides the native tabs */
+#TabsToolbar {
+    visibility: collapse;
+}
+
+/* Hides the TreeStyleTabs header */
+#sidebar-header {
+    display: none;
+}

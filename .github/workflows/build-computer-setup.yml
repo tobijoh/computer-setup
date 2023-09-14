@@ -39,4 +39,5 @@ jobs:
             *.settings.json
             *.omp.json
             neovim/*.lua
+            firefox/userChrome.css
           token: ${{ secrets.ACCESS_TOKEN }}
