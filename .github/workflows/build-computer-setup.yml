@@ -36,6 +36,10 @@ jobs:
         with:
           files: |
             ComputerSetup.ps1
+            powershell-core/aliases.ps1
+            powershell-core/modules.ps1
+            powershell-core/ps-core.ps1
+            powershell-core/utils.ps1
             windows-terminal/windows-terminal.settings.json
             vscode/vscode.settings.json
             oh-my-posh/theme.omp.json

@@ -60,51 +60,33 @@ function ConfigureDevelopmentTools {
 }
 
 function ConfigurePowershell {
-    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-    Install-Module -Name z -RequiredVersion 1.1.10 -AllowClobber
-    Install-Module psreadline -Force
-
-    Add-ToPowerShellProfile -Find "*Set-PSReadLineOption*" -Content @('
-    Set-PSReadLineOption -PredictionSource History
-    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
-    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
-
-    # Shows navigable menu of all options when hitting Tab
-    Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
-    
-    Import-Module posh-git
-    Set-Alias g git    
-
-    $GitPromptSettings.EnableStashStatus = $true
-
-    oh-my-posh init pwsh --config "https://github.com/tobijoh/computer-setup/releases/latest/download/theme.omp.json" | Invoke-Expression
-
-    function Set-PoshGitStatus {
-        $global:GitStatus = Get-GitStatus
-        $env:POSH_GIT_STRING = Write-GitStatus -Status $global:GitStatus
+    $CustomPowerShellDirectory = Join-Path $ProfileDirectory "Custom"
+    if (-not (Test-Path $CustomPowerShellDirectory)) {
+        New-Item -Path $CustomPowerShellDirectory -ItemType Directory -Force
     }
-    
-    New-Alias -Name "Set-PoshContext" -Value "Set-PoshGitStatus" -Scope Global -Force
 
-    function Open-Solution($solution, $ide = "rider") {
-        $rider = "C:\Users\3403\AppData\Local\JetBrains\Installations\Rider231\bin\rider64.exe"
-        $riderWorkDir = "C:\Users\3403\AppData\Local\JetBrains\Installations\Rider231\bin\"
-        $vs22 = "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.exe" 
-        $vs22WorkDir = "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\"
-        
-        if (!$solution) {
-            $solution = Get-ChildItem -Filter "*.sln" | Select-Object -First 1
-        }
-    
-        if (!$solution) {
-            $solution = Get-ChildItem -Filter "*.csproj" | Select-Object -First 1
-        }
-    
-        if ($ide -eq "rider") {
-            Start-Process $rider -WorkingDirectory $riderWorkDir -ArgumentList $solution
-        } else {
-            Start-Process $vs22 -WorkingDirectory $vs22WorkDir -ArgumentList $solution
-        }
+    $ScriptsToDownload = @(
+        'aliases',
+        'modules',
+        'ps-core',
+        'utils'
+    )
+
+    foreach ($ScriptToDownload in $ScriptsToDownload) {
+        $ScriptSourceUrl = "https://github.com/tobijoh/computer-setup/releases/latest/download/$ScriptToDownload.ps1"
+        Invoke-WebRequest -Uri $ScriptSourceUrl -OutFile "$CustomPowerShellDirectory\$ScriptToDownload.ps1"
+    }
+
+    # Load the modules
+    $ModuleScriptPath = "$CustomPowerShellDirectory\modules.ps1"
+    & "$ModuleScriptPath"
+
+    Add-ToPowerShellProfile -Find "*# Setup of the PowerShell environment*" -Content @('
+    # Setup of the PowerShell environment
+    $ProfileDirectory = Split-Path -Path $PROFILE
+    $ScriptFiles = Get-ChildItem -Path (Join-Path $ProfileDirectory "Custom") -Recurse -Filter *.ps1
+    foreach ($ScriptFile in $ScriptFiles) {
+        . $ScriptFile.FullName
     }
     ')
 }
@@ -291,8 +273,6 @@ function Configure-NeoVim {
     Invoke-WebRequest https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | New-Item "$env:LOCALAPPDATA/nvim/autoload/plug.vim" -Force
 
     # Fetch settings and plugins
-    $NeoVimDestinationPath = "$env:LOCALAPPDATA\neovim"
-
     $NeoVimSourceSettingsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/init.lua"
     $NeoVimDestinationSettingsPath = "$NeoVimDetinationPath\init.lua"
     
@@ -311,7 +291,7 @@ function Configure-NeoVim {
 
 # HELPER FUNCTIONS
 function Add-ToPowerShellProfile($Find, $Content) {
-    if (!( Test-Path $Profile )) { 
+    if (-not (Test-Path $Profile)) { 
         New-Item $Profile -Type File -Force
     }
     else {
