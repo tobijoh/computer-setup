@@ -8,6 +8,8 @@ Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 Set-PsFzfOption -TabExpansion
 
+Import-Module posh-git
+
 $GitPromptSettings.EnableStashStatus = $true
 
 $ProfileDirectory = Split-Path -Path $PROFILE

@@ -20,21 +20,29 @@ function SetupRestorePoint {
 
 function SetupPowerOptions {
     Write-Host "Setting up power options"
+    
     Powercfg /Change monitor-timeout-ac 20
     Powercfg /Change standby-timeout-ac 0
     Powercfg -setacvalueindex scheme_current sub_buttons pbuttonaction 0
+
     Write-Host "Completed power options" -Foreground green
 }
 
 function SetupDirectoryOptions {
+    Write-Host "Setting up directory options"
+
     # Show hidden files, Show protected OS files, Show file extensions
     Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions
     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowTaskViewButton -Value 0 -Type DWord -Force
     Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowCortanaButton -Value 0 -Type DWord -Force
     Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search -Name SearchBoxTaskbarMode -Value 0 -Type DWord -Force
+
+    Write-Host "Completed directory options" -Foreground green
 }
 
 function CleanUpPreInstalledApps {
+    Write-Host "Removing pre-installed apps"
+
     # Remove all $AppNames String array from taskbar Pin location
     $ComObj = (New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}')
     $AppNames = "Microsoft Edge|stor|mai|support"
@@ -61,7 +69,6 @@ function CleanUpPreInstalledApps {
         }
     }
 
-    Write-Host "Remove pre-installed apps"
     # Microsoft junk
     Get-AppxPackage Microsoft.*3D* | Remove-AppxPackage
     Get-AppxPackage Microsoft.*advertising* | Remove-AppxPackage
@@ -97,10 +104,13 @@ function CleanUpPreInstalledApps {
     Get-AppxPackage *disney* | Remove-AppxPackage
     Get-AppxPackage *MarchofEmpires* | Remove-AppxPackage
     Get-AppxPackage *Solitaire* | Remove-AppxPackage
-    Write-Host "Removed pre-installed apps"
+
+    Write-Host "Removed pre-installed apps" -ForegroundColor Green
 }
 
 function InstallWindowsSubsystemForLinux {
+    Write-Host "Installing Windows Subsystem for Linux"
+
     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
     Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
     refreshenv
@@ -108,23 +118,38 @@ function InstallWindowsSubsystemForLinux {
     wsl --update
 
     $MachineType = Get-CimInstance Win32_ComputerSystem | Select-Object Model
-    if (($MachineType -ne "Virtual Machine") -and ($MachineType -ne "VMware Virtual Platform") -and ($MachineType -ne "VirtualBox")) {
-        if (!((wsl --list --all) -Like "*Ubuntu*")) {
-            wsl --install --distribution Ubuntu
-        }
+    if(($MachineType.Model -like "*VirtualBox*") -or ($MachineType.Model -like "*VMware*") -or ($MachineType.Model -like "*Virtual Machine*")) {
+        Return
     }
 
+    $WslInstallations = wsl --list --all
+    foreach ($WslInstallation in $WslInstallations) {
+        $CleanedWslInstallation = $WslInstallation -replace "`0", ' '
+        if ($CleanedWslInstallation -Like "*Ubuntu*") {
+            Return
+        }
+    }
+    
+    wsl --install --distribution Ubuntu
+
+    Write-Host "Installed Windows Subsystem for Linux" -ForegroundColor Green
 }
 
 function RunWindowsUpdate {
+    Write-Host "Running Windows Update"
+
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
     Install-Module -Name PSWindowsUpdate -Repository PSGallery
     Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d -AddServiceFlag 7
     Get-WindowsUpdate
     Install-WindowsUpdate
+
+    Write-Host "Windows Update completed" -ForegroundColor Green
 }
 
 function SetGitUser {
+    Write-Host "Setting up Git user"
+
     $GitUserName = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_USER_NAME", "User")
     $GitEmail = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_EMAIL", "User")
 
@@ -132,6 +157,8 @@ function SetGitUser {
         git config --global user.name "$GitUserName"
         git config --global user.email "$GitEmail"
     }
+
+    Write-Host "Git user setup completed" -ForegroundColor Green
 }
 
 function InstallFonts {
@@ -171,9 +198,13 @@ function InstallFonts {
     Pop-Location
 
     Remove-Item -Path $FontsTempDirectory -Force -Recurse
+
+    Write-Host "Fonts installed" -ForegroundColor Green
 }
 
 function DisableUac {
+    Write-Host "Disabling User Account Control"
+
     $UacRegistryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
     New-ItemProperty -Path $UacRegistryPath -Name 'ConsentPromptBehaviorAdmin' -Value 0 -PropertyType DWORD -Force | Out-Null
     New-ItemProperty -Path $UacRegistryPath -Name 'ConsentPromptBehaviorUser' -Value 3 -PropertyType DWORD -Force | Out-Null
@@ -182,9 +213,13 @@ function DisableUac {
     New-ItemProperty -Path $UacRegistryPath -Name 'EnableVirtualization' -Value 1 -PropertyType DWORD -Force | Out-Null
     New-ItemProperty -Path $UacRegistryPath -Name 'PromptOnSecureDesktop' -Value 0 -PropertyType DWORD -Force | Out-Null
     New-ItemProperty -Path $UacRegistryPath -Name 'ValidateAdminCodeSignatures' -Value 0 -PropertyType DWORD -Force | Out-Null
+
+    Write-Host "User Account Control disabled" -ForegroundColor Green
 }
 
 function AddWindowsSecurityExceptions {
+    Write-Host "Adding Windows Security exceptions"
+
     $PathExclusions = @(
         "C:\Windows\Microsoft.NET",
         "C:\Windows\assembly",
@@ -227,6 +262,8 @@ function AddWindowsSecurityExceptions {
     $WindowsSecurityPreferences = Get-MpPreference
     $WindowsSecurityPreferences.ExclusionPath
     $WindowsSecurityPreferences.ExclusionProcess
+
+    Write-Host "Windows Security exceptions added" -ForegroundColor Green
 }
 
 function RestoreClassicContextMenuInWindows11 {

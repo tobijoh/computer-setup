@@ -3,8 +3,6 @@ function InstallPrograms {
     
     choco install 7zip.install -y
     choco install git -y
-    choco install poshgit -y
-    choco install microsoft-edge -y
     choco install googlechrome -y
     choco install firefox -y
     choco install vscode -y
@@ -60,6 +58,8 @@ function ConfigureDevelopmentTools {
 }
 
 function ConfigurePowershell {
+    Write-Host "Configuring PowerShell..."
+
     $CustomPowerShellDirectory = Join-Path $ProfileDirectory "Custom"
     if (-not (Test-Path $CustomPowerShellDirectory)) {
         New-Item -Path $CustomPowerShellDirectory -ItemType Directory -Force
@@ -89,9 +89,13 @@ function ConfigurePowershell {
         . $ScriptFile.FullName
     }
     ')
+
+    Write-Host "PowerShell configured" -ForegroundColor Green
 }
 
 function ConfigureGit {
+    Write-Host "Configuring Git..."
+
     git config --global push.default current
     git config --global core.editor "code --wait"
     git config --global merge.tool vscode
@@ -111,6 +115,8 @@ function ConfigureGit {
     git config --global alias.main "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4"
     git config --global alias.cge "config --global -e"
     git config --global alias.pt "push origin --tags"
+
+    Write-Host "Git configured" -ForegroundColor Green
 }
 
 function ConfigureVsCode {
@@ -176,6 +182,8 @@ function ConfigureFirefox {
 }
 
 function ConfigureLaTeX {
+    Write-Host "Configuring LaTeX..."
+
     $ThingsToAddToPath = @(
         "C:\Program Files\MiKTeX\miktex\bin\x64",
         "C:\Strawberry\c\bin",
@@ -186,15 +194,24 @@ function ConfigureLaTeX {
     foreach ($ThingToAddToPath in $ThingsToAddToPath) {
         [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$ThingToAddToPath", [EnvironmentVariableTarget]::User)
     }
+
+    Write-Host "LaTeX configured" -ForegroundColor Green
 }
 
 function CreateSshKey {
     Write-Host "Creating an SSH key"
 
     $Email = [Environment]::GetEnvironmentVariable("WIN10_DEV_BOX_GIT_EMAIL", "User")
-    $SshPath = Join-Path $env:USERPROFILE ".ssh" "id_ed25519"
 
-    & ssh-keygen -t ed25519 -C "$Email" -f "$SshPath" -N "''"
+    $SshDirectory = Join-Path $env:USERPROFILE ".ssh"
+    if (-not (Test-Path $SshDirectory)) {
+        New-Item -ItemType Directory -Path $SshDirectory
+    }
+
+    $SshPath = Join-Path $SshDirectory "id_ed25519"
+
+    & ssh-keygen -t ed25519 -C "$Email" -f (Join-Path $SshDirectory "id_ed25519") -q -N '""'
+    & ssh-keygen -t rsa -C "$Email" -f (Join-Path $SshDirectory "id_rsa") -q -N '""'
 
     Write-Host "SSH key successfully created"
 }
@@ -269,19 +286,27 @@ function SetMicrosoftEdgeStartPage {
 function Configure-NeoVim {
     Write-Host "Configuring NeoVim"
 
+    $NeoVimDestinationPath = Join-Path "$env:LOCALAPPDATA" "nvim"
+
     # Install vim-plug
-    Invoke-WebRequest https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | New-Item "$env:LOCALAPPDATA/nvim/autoload/plug.vim" -Force
+    Invoke-WebRequest https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | New-Item (Join-Path "$NeoVimDestinationPath" "autoload" "plug.vim") -Force
 
     # Fetch settings and plugins
     $NeoVimSourceSettingsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/init.lua"
-    $NeoVimDestinationSettingsPath = "$NeoVimDetinationPath\init.lua"
+    $NeoVimDestinationSettingsPath = Join-Path "$NeoVimDestinationPath" "init.lua"
     
     Invoke-WebRequest -Uri $NeoVimSourceSettingsPath -OutFile $NeoVimDestinationSettingsPath
 
     $NeoVimSourcePluginsPath = "https://github.com/tobijoh/computer-setup/releases/latest/download/plugins.lua"
-    $NeoVimDestinationPluginsPath = "$NeoVimDetinationPath\lua\plugins.lua"
+
+    $NeoVimDestinationPluginsPath = Join-Path "$NeoVimDestinationPath" "lua"
+    if (-not (Test-Path $NeoVimDestinationPluginsPath)) {
+        New-Item -ItemType Directory -Path $NeoVimDestinationPluginsPath
+    }
+
+    $NeoVimDestinationPluginsFile = Join-Path $NeoVimDestinationPluginsPath "plugins.lua"
     
-    Invoke-WebRequest -Uri $NeoVimSourcePluginsPath -OutFile $NeoVimDestinationPluginsPath
+    Invoke-WebRequest -Uri $NeoVimSourcePluginsPath -OutFile $NeoVimDestinationPluginsFile
 
     # Install plugins
     & nvim --headless +PlugInstall +qa
